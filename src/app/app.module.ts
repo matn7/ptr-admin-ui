@@ -11,6 +11,12 @@ import { FormsModule } from "@angular/forms";
 import { ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from '@angular/common';
 import { MatComponentsModule } from './mat-component';
+import { AuthenticationService } from './service/authentication.service';
+import { HttpClientModule } from "@angular/common/http";
+import { HandleErrorsService } from './service/handle-errors.service';
+import { RouteGuardService } from './service/route-guard-service';
+import { MessageComponent } from './common/message/message.component';
+import { AppInternalMessagesService } from './service/AppInternalMessagesService';
 
 
 @NgModule({
@@ -18,7 +24,8 @@ import { MatComponentsModule } from './mat-component';
     AppComponent,
     AdminComponent,
     LoginComponent,
-    HeaderComponent
+    HeaderComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,
@@ -27,9 +34,14 @@ import { MatComponentsModule } from './mat-component';
     BrowserAnimationsModule,
     MatComponentsModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    AuthenticationService,
+    HandleErrorsService,
+    AppInternalMessagesService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

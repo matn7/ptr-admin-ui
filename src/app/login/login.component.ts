@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { AuthenticationService } from '../service/authentication.service';
+import { Router } from '@angular/router';
+import { RETURN_URL, TOKEN_EXPIRED, INVALID_CREDENTIALS } from '../app.constants';
+import { HandleErrorsService } from '../service/handle-errors.service';
+import { AppInternalMessagesService } from '../service/AppInternalMessagesService';
 
 @Component({
   selector: 'app-login',
@@ -10,10 +15,24 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   username: string;
   password: string;
+  invalidLogin = false;
+  errorMessage = INVALID_CREDENTIALS;
+  returnUrl: string;
+  expiredToken = false;
 
-  constructor() { }
+  constructor(
+    private router: Router,
+    private authenticationService: AuthenticationService,
+    private handleError: HandleErrorsService,
+    private appIntentalMessageService: AppInternalMessagesService 
+  ) { }
 
   ngOnInit() {
+    this.expiredToken = this.authenticationService.isTokenExpired();
+    if (this.expiredToken) {
+      sessionStorage.getItem(TOKEN_EXPIRED);
+    }
+    this.returnUrl = "/login";
     this.initForm();
   }
 
@@ -21,6 +40,34 @@ export class LoginComponent implements OnInit {
     console.log("handleJWTAuthLogin");
     this.username = this.loginForm.value.username;
     this.password = this.loginForm.value.password;
+
+    this.authenticationService
+      .executeJWTAuthenticationService(this.username, this.password)
+      .subscribe(
+        data => {
+          if (sessionStorage.getItem("returnUrl") != null) {
+            this.router.navigate([sessionStorage.getItem("returnUrl")]);
+          } else {
+            this.router.navigate(["admin"])
+          }
+          sessionStorage.removeItem(RETURN_URL);
+          if (sessionStorage.getItem(TOKEN_EXPIRED)) {
+            sessionStorage.removeItem(TOKEN_EXPIRED);
+          }
+          this.invalidLogin = false;
+        },
+        error => {
+          this.invalidLogin = true;
+          console.log(error);
+          this.errorMessage = this.handleError.displayErrorMessage(
+            error.errorStatus,
+            error.errorMsg,
+            this.returnUrl
+          );
+
+          this.appIntentalMessageService.messageFromBackend(this.errorMessage);
+        }
+      );
   }
 
   private initForm() {
