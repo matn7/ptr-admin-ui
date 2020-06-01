@@ -12,12 +12,13 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from '@angular/common';
 import { MatComponentsModule } from './mat-component';
 import { AuthenticationService } from './service/authentication.service';
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { HandleErrorsService } from './service/handle-errors.service';
 import { RouteGuardService } from './service/route-guard-service';
 import { MessageComponent } from './common/message/message.component';
 import { AppInternalMessagesService } from './service/AppInternalMessagesService';
-
+import { UserService } from "./service/user.service";
+import { HttpInterceptorAuthService } from './service/http-interceptor-auth.service';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,13 @@ import { AppInternalMessagesService } from './service/AppInternalMessagesService
   providers: [
     AuthenticationService,
     HandleErrorsService,
-    AppInternalMessagesService
+    AppInternalMessagesService,
+    UserService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptorAuthService,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

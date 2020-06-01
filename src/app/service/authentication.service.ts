@@ -5,6 +5,7 @@ import { Observable, throwError } from "rxjs";
 import { map, catchError } from "rxjs/operators";
 import { NotAuthorizedError } from '../common/not-authorized-error';
 import { AppError } from '../common/app-error';
+import { HandleErrorsService } from './handle-errors.service';
 // import 'rxjs/add/operator/catch';
 
 @Injectable({
@@ -12,7 +13,7 @@ import { AppError } from '../common/app-error';
 })
 export class AuthenticationService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private handleErrorService: HandleErrorsService) { }
 
   executeJWTAuthenticationService(username, password) {
     return this.http
@@ -26,7 +27,7 @@ export class AuthenticationService {
           sessionStorage.setItem(TOKEN, `${data.token}`);
           return data;
         }),
-        catchError(this.handleError)
+        catchError(this.handleErrorService.handleError)
       );
   }
 
@@ -40,13 +41,13 @@ export class AuthenticationService {
     return !(token === null);
   }
 
-  handleError(error: Response) {
-    if (error.status === 401) {
-      console.log("---> " + error);
-      return throwError(
-        new NotAuthorizedError(error.status, error["error"])
-      );
+  getAuthenticatedUser() {
+    return sessionStorage.getItem(AUTHENTICATED_USER);
+  }
+
+  getAuthenticatedToken() {
+    if (this.getAuthenticatedToken) {
+      return sessionStorage.getItem(TOKEN);
     }
-    return Observable.throw(new AppError(error));
   }
 }

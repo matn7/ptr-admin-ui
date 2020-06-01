@@ -3,8 +3,7 @@ import { AppInternalMessagesService } from '../../service/AppInternalMessagesSer
 
 @Component({
   selector: 'app-message',
-  templateUrl: './message.component.html',
-  styleUrls: ['./message.component.css']
+  templateUrl: './message.component.html'
 })
 export class MessageComponent implements OnInit {
 
@@ -19,8 +18,11 @@ export class MessageComponent implements OnInit {
 
   ngOnInit() {
     this.appInternalMessageService.changeMsgFromBackend.subscribe(isActive => {
+      console.log("MessageComponent: " + isActive.isMsg + ", " + isActive.msg);
       this.isMsgFromBackend = isActive.isMsg;
       this.errorMessage = isActive.msg;
+      console.log("errorMessage: " + this.errorMessage);
+      console.log("isMsgFromBackend: " + this.isMsgFromBackend);
     });
   }
 

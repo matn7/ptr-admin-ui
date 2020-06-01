@@ -1,3 +1,5 @@
 <mat-card class="ptr_warning_message" *ngIf="isMsgFromBackend">
   <mat-card-content>{{ errorMessage }}<mat-icon style="float: right" (click)="reset()">close</mat-icon></mat-card-content>
 </mat-card>
+
+{{ isMsgFromBackend }}

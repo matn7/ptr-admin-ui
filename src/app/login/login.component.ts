@@ -16,15 +16,14 @@ export class LoginComponent implements OnInit {
   username: string;
   password: string;
   invalidLogin = false;
-  errorMessage = INVALID_CREDENTIALS;
   returnUrl: string;
   expiredToken = false;
+  errorMessage: string;
 
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
-    private handleError: HandleErrorsService,
-    private appIntentalMessageService: AppInternalMessagesService 
+    private handleErrorService: HandleErrorsService
   ) { }
 
   ngOnInit() {
@@ -59,16 +58,22 @@ export class LoginComponent implements OnInit {
         error => {
           this.invalidLogin = true;
           console.log(error);
-          this.errorMessage = this.handleError.displayErrorMessage(
+          this.handleErrorService.displayErrorMessage(
             error.errorStatus,
             error.errorMsg,
             this.returnUrl
           );
-
-          this.appIntentalMessageService.messageFromBackend(this.errorMessage);
         }
       );
   }
+
+  // this.errorMessage = this.handleError.displayErrorMessage(
+  //   error.errorStatus,
+  //   error.errorMsg,
+  //   this.returnUrl
+  // );
+
+  // this.appIntentalMessageService.messageFromBackend(this.errorMessage);
 
   private initForm() {
     const username = this.username;
